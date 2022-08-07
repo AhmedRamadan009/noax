@@ -38,7 +38,11 @@ export default function TvDetalis() {
 <h2>{detalis.name}</h2>
 <h3 className='h5 text-muted'>{detalis.tagline}</h3>
 
-
+{detalis.genres?.map((genre)=>
+    <button className='btn btn-info mx-2' key={genre.id}>{genre.name}</button>
+    
+    )}
+  
   
   <ul className='mt-5'>
 <li className='list-unstyled mb-3'>Budget : {detalis.budget}</li>

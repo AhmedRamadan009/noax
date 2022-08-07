@@ -39,6 +39,7 @@ export default function ActorsDetalis() {
 
 
   
+  
   <ul className='mt-5'>
 
 <li className='list-unstyled mb-3'>Place of birth : {detalis.place_of_birth}</li>
