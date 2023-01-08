@@ -33,7 +33,7 @@ export default function Navbar(props) {
           <Link className="nav-link" to="about">About</Link>
         </li>
         <li className="nav-item">
-          <Link className="nav-link" to="networks">Networks</Link>
+          <Link className="nav-link" to="search">searc</Link>
         </li>
         
         
@@ -44,7 +44,7 @@ export default function Navbar(props) {
 
         <div className='d-flex justify-content-center align-items-center '>
           <div className="div w-50  mx-3">
-            <input id='searchInput' onKeyUp={props.searchTrending} type="text" className='form-control' />
+            <input onChange={props.searchTrending} name='searchInput'   type="text" className='form-control' />
           </div>
         <i className='fa fa-brands fa-facebook mx-1'></i>
         <i className='fa fa-brands fa-instagram mx-1'></i>
@@ -54,7 +54,7 @@ export default function Navbar(props) {
         </div>
 
         {props.userdata?<li className="nav-item">
-          <span className='mx-2' >Weclome ,{props.userdata.first_name}<i class="fa-solid fa-heart mx-1"></i></span>
+          <span className='mx-2' >Weclome ,{props.userdata.first_name}<i className="fa-solid fa-heart mx-1"></i></span>
           <a onClick={props.logout} className="nav-link d-inline-block " to="logout">Logout</a>
         </li>: <>
         

@@ -72,7 +72,7 @@ search:`?id=${id}`,
         <h2 className='h5 text-center mt-2'>{movie.title}</h2>
         <div className="bg-info w-25 position-absolute top-0 end-0 text-center">
         
-      <span>{Math.floor( movie.vote_average)}<i class="fa-solid fa-star"></i></span>  
+      <span>{Math.floor( movie.vote_average)}<i className="fa-solid fa-star"></i></span>  
       </div>
       </div>
       
@@ -104,7 +104,7 @@ search:`?id=${id}`,
     <h2 className='h5 text-center mt-2'>{tv.name}</h2>
     <div className="bg-info w-25 position-absolute top-0 end-0 text-center">
         
-      <span>{Math.floor( tv.vote_average)}<i class="fa-solid fa-star"></i></span>  
+      <span>{Math.floor( tv.vote_average)}<i className="fa-solid fa-star"></i></span>  
       </div>
   </div>
 </div>

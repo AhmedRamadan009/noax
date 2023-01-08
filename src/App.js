@@ -59,13 +59,15 @@ let navigate =useNavigate();
 
   
   
-  async function searchTrending(){
-let term = document.getElementById('searchInput').value;
+  async function searchTrending(e){
 
+let term= e.target.elements.searchInput.value;
     let {data} =await axios.get(`https://api.themoviedb.org/3/search/movie?api_key=eba8b9a7199efdcb0ca1f96879b83c44&query=${term}`);
     setTrendingMovies (data.results);
+    console.log(data.results);
     
   }
+  searchTrending();
   
   return (
     <>
@@ -77,7 +79,7 @@ let term = document.getElementById('searchInput').value;
   <Route path='login' element={<Login saveUserData={saveUserData} />}/>
   <Route path='home' element={<ProtectedRoute><Home/></ProtectedRoute>}/>
   <Route path='movies' element={<ProtectedRoute><Movies/></ProtectedRoute>}/>
-  <Route path='search' element={<ProtectedRoute><Search TrendingMovies={TrendingMovies}/></ProtectedRoute>}/>
+  <Route path='search' element={<ProtectedRoute><Search/></ProtectedRoute>}/>
   <Route path='tvshow' element={<ProtectedRoute><Tvshow/></ProtectedRoute>}/>
   <Route path='pepole' element={<ProtectedRoute><People/></ProtectedRoute>}/>
   <Route path='detalis' element={<ProtectedRoute><MoviesDetalis/></ProtectedRoute>}/>
