@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 
 
 export default function Register() {
-  let baseURL='https://routeegypt.herokuapp.com/';
+  let baseURL='https://route-movies-api.vercel.app/';
   const [user, setUser] = useState({'first_name':'','last_name':'','age':'','email':'','password':''});
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
