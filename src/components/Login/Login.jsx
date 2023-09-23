@@ -1,72 +1,65 @@
-import React from 'react'
-import axios from 'axios';
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react'
+import { useFormik } from 'formik'
+import * as Yup from 'yup'
+import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
 
-export default function Login(props) {
-  let baseURL='https://route-movies-api.vercel.app/';
-  const [user, setUser] = useState({'email':'','password':''});
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  const [isloading, setIsLoading] = useState(false)
-  let navigate=useNavigate();
+export default function Login({saveUserData}) {
+let navigate =useNavigate()
+const [isloading, setisloading] = useState(false)
+const [messageError, setmessageError] = useState('')
 
-  async function getLogin(e){
-    e.preventDefault();
-    setIsLoading(true)
-    let {data}= await axios.post(baseURL+'signin', user);
-    setIsLoading(false)
-    console.log(data);
-    if(data.message=='success')
-    {
-      localStorage.setItem('token',data.token)
-      props.saveUserData();
-      setSuccess(data.message)
-     
-      navigate('/home')
-  
-    }else{
-  setError(data.message)
-  
-    }
-  
-    }
+  async function handleLogin(values){
+    setisloading(true)
+   let {data}= await axios.post(`https://route-ecommerce.onrender.com/api/v1/auth/signin`,values).catch((errr)=>{
+    setisloading(false)
+    setmessageError(errr.response.data.message);
+   })
 
-  function getUserData(e){
-    setUser({...user, [e.target.name]:e.target.value});
-console.log(user);
-
+   if(data.message==="success")
+   {
+    localStorage.setItem('token',data.token);
+    saveUserData();
+    setisloading(false)
+    navigate('/home')
+   }
+    console.log(values);
   }
-  return (
-    <>
-<div className="container">
-  <div className="w-75 m-auto my-4">
-    <h2>Form Login</h2>
-    <form onSubmit={getLogin} >
-       <div>
-<label htmlFor="email">Email:</label>
-  <input onChange={getUserData} type="email" name="email" className='form-control' />
 
-    </div>
-    <div>
-<label htmlFor="password">Password:</label>
-  <input onChange={getUserData} type="password" name="password" className='form-control' />
-
-    </div>
+  let validationSchema = Yup.object({
+    email:Yup.string().required("email is required").email("email is invalid"),
+    password:Yup.string().required("password is required").matches(/^[A-Z][a-z0-9]{5,10}$/,"Password must start with Uppercase and max length is 10"),
     
-    <button type='submit' className={'btn btn-outline-info float-end my-4 '+ (isloading? " disabled":"") }>{isloading?<i className="fa fa-spinner fa-spin"></i>:'Login'}</button>
-    <div className="clearfix"></div>
+  })
+  let formik =useFormik({
+    initialValues:{
+      email:'',
+      password:''
+      
+    },validationSchema,
+    onSubmit:handleLogin
+  })
+  return<>
+  <div className="w-75 mx-auto py-4">
+
+    <h3>Login Now:</h3>
+    {messageError.length>0 ? <div className="alert alert-danger">{messageError} </div>:null}
    
     
-    
-{error?<div className="alert alert-danger my-2">{error}</div>:''}
-{success?<div className="alert alert-success my-2">{success}</div>:''}
-   
-    </form>
+    <form onSubmit={formik.handleSubmit}>
+
+      <label htmlFor="email">Email:</label>
+      <input onBlur={formik.handleBlur} className='form-control  mb-2' onChange={formik.handleChange} value={formik.values.email} type="email" name='email' id='email'/>
+        {formik.errors.email && formik.touched.email? <div className="alert alert-danger">{formik.errors.email}</div>:null}
+
+      <label htmlFor="password">Password:</label>
+      <input onBlur={formik.handleBlur} className='form-control  mb-2' onChange={formik.handleChange} value={formik.values.password} type="password" name='password' id='password'/>
+        {formik.errors.password && formik.touched.password? <div className="alert alert-danger">{formik.errors.password}</div>:null}
+
+          {isloading? <button type='button' className='btn bg-main text-white'><i className='fas fa-spinner fa-spin'></i></button>: <button disabled={!(formik.isValid && formik.dirty)} type='submit' className='btn bg-main text-white'>Login</button>}
+       
+     
+    </form> 
   </div>
-</div>
-
-
-    </>
-  )
+  </>
 }
