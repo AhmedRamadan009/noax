@@ -29,12 +29,7 @@ export default function Navbar(props) {
         <li className="nav-item">
           <Link className="nav-link" to="pepole">Pepole</Link>
         </li>
-        <li className="nav-item">
-          <Link className="nav-link" to="about">About</Link>
-        </li>
-        <li className="nav-item">
-          <Link className="nav-link" to="search">searc</Link>
-        </li>
+       
         
         
       </ul>:''}
