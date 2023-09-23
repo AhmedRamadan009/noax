@@ -1,114 +1,78 @@
-import axios from 'axios';
-import Joi from 'joi';
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom';
-
-
+import { useFormik } from 'formik'
+import * as Yup from 'yup'
+import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
 
 export default function Register() {
-  let baseURL='https://route-movies-api.vercel.app/';
-  const [user, setUser] = useState({'first_name':'','last_name':'','age':'','email':'','password':''});
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  const [isloading, setIsLoading] = useState(false)
-const [errorList, setErrorList] = useState([])
-  let navigate=useNavigate();
+let navigate =useNavigate()
+const [isloading, setisloading] = useState(false)
+const [messageError, setmessageError] = useState('')
 
+  async function handleRegister(values){
+    setisloading(true)
+   let {data}= await axios.post(`https://route-ecommerce.onrender.com/api/v1/auth/signup`,values).catch((errr)=>{
+    setisloading(false)
+    setmessageError(errr.response.data.message);
+   })
 
-
-   async function getSubmitData(e){
-  e.preventDefault();
-  let validateResponse = validateForm();
-  if(validateResponse.error){
-    setErrorList(validateResponse.error.details);
-
-  }
-  else{
-    setIsLoading(true)
-  let {data}= await axios.post(baseURL+'signup', user);
-  setIsLoading(false)
-  console.log(data);
-  if(data.message=='success')
-  {
-   
-    setSuccess(data.message)
-   
+   if(data.message==="success")
+   {
+    setisloading(false)
     navigate('/login')
-
-  }else{
-setError(data.message)
-
+   }
+    console.log(values);
   }
 
-  }
-  
-  function validateForm(){
+  let validationSchema = Yup.object({
+    name:Yup.string().required("name is required").min(3,"min length is 3").max(10,"max length is 10"),
+    email:Yup.string().required("email is required").email("email is invalid"),
+    password:Yup.string().required("password is required").matches(/^[A-Z][a-z0-9]{5,10}$/,"Password must start with Uppercase and max length is 10"),
+    rePassword:Yup.string().required("repassword is required").oneOf([Yup.ref("password")],"password and repassword not matches"),
+    phone:Yup.string().required("phone is required").matches(/^01[0125][0-9]{8}$/,"phone must be an egyption phone number"),
+  })
+  let formik =useFormik({
+    initialValues:{
+      name:'',
+      phone:'',
+      email:'',
+      password:'',
+      rePassword:''
+    },validationSchema,
+    onSubmit:handleRegister
+  })
+  return<>
+  <div className="w-75 mx-auto py-4">
 
-    const schema = Joi.object({
-
-first_name:Joi.string().alphanum().required().min(3).max(15),
-last_name:Joi.string().alphanum().required().min(3).max(15),
-age:Joi.number().required().min(18).max(90),
-email:Joi.string().required().email({  tlds: { allow: ['com', 'net'] } }),
-password:Joi.string().required().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$'))
-
-
-
-    })
-    return schema .validate(user,{abortEarly:false});
-  }
-
-  }
-  function getUserData(e){
-    setUser({...user, [e.target.name]:e.target.value});
-console.log(user);
-
-  }
-  return (
-    <>
-<div className="container">
-  <div className="w-75 m-auto my-4">
-    <h2>Form Registation</h2>
-    <form onSubmit={getSubmitData} >
-    <div>
-<label htmlFor="frist-name" >FristName:</label>
-  <input onChange={getUserData} type="text" name="first_name" className='form-control'  />
-
-    </div>
-    <div>
-<label htmlFor="last-name">LastName:</label>
-  <input onChange={getUserData} type="text" name="last_name" className='form-control' />
-
-    </div>
-    <div>
-<label htmlFor="age">Age:</label>
-  <input onChange={getUserData} type="number" name="age" className='form-control' />
-
-    </div>
-    <div>
-<label htmlFor="email">Email:</label>
-  <input onChange={getUserData} type="email" name="email" className='form-control' />
-
-    </div>
-    <div>
-<label htmlFor="password">Password:</label>
-  <input onChange={getUserData} type="password" name="password" className='form-control' />
-
-    </div>
-    
-    <button type='submit' className={'btn btn-outline-info float-end my-4 '+ (isloading? " disabled":"") }>{isloading?<i className="fa fa-spinner fa-spin"></i>:'Register'}</button>
-    <div className="clearfix"></div>
+    <h3>Register Now:</h3>
+    {messageError.length>0 ? <div className="alert alert-danger">{messageError} </div>:null}
    
-    {errorList.map((errors,index)=> <div key={index} className="alert alert-danger my-2">{errors.message}</div>
-    )}
     
-{error?<div className="alert alert-danger my-2">{error}</div>:''}
-{success?<div className="alert alert-success my-2">{success}</div>:''}
-   
-    </form>
+    <form onSubmit={formik.handleSubmit}>
+      <label htmlFor="name">Name:</label>
+      <input  onBlur={formik.handleBlur} className='form-control  mb-2' onChange={formik.handleChange} value={formik.values.name} type="text" name='name' id='name'/>
+       {formik.errors.name && formik.touched.name? <div className="alert alert-danger">{formik.errors.name}</div>:null}
+
+      <label htmlFor="email">Email:</label>
+      <input onBlur={formik.handleBlur} className='form-control  mb-2' onChange={formik.handleChange} value={formik.values.email} type="email" name='email' id='email'/>
+        {formik.errors.email && formik.touched.email? <div className="alert alert-danger">{formik.errors.email}</div>:null}
+
+      <label htmlFor="password">Password:</label>
+      <input onBlur={formik.handleBlur} className='form-control  mb-2' onChange={formik.handleChange} value={formik.values.password} type="password" name='password' id='password'/>
+        {formik.errors.password && formik.touched.password? <div className="alert alert-danger">{formik.errors.password}</div>:null}
+
+      <label htmlFor="rePassword">RePassword:</label>
+      <input onBlur={formik.handleBlur}  className='form-control  mb-2' onChange={formik.handleChange} value={formik.values.rePassword} type="password" name='rePassword' id='rePassword'/>
+       {formik.errors.rePassword && formik.touched.rePassword? <div className="alert alert-danger">{formik.errors.rePassword}</div>:null}
+
+      <label htmlFor="phone">Phone:</label>
+      <input  onBlur={formik.handleBlur} className='form-control  mb-2' onChange={formik.handleChange} value={formik.values.phone} type="tel" name='phone' id='phone'/>
+        {formik.errors.phone && formik.touched.phone? <div className="alert alert-danger">{formik.errors.phone}</div>:null}  
+
+          {isloading? <button type='button' className='btn bg-main text-white'><i className='fas fa-spinner fa-spin'></i></button>: <button disabled={!(formik.isValid && formik.dirty)} type='submit' className='btn bg-main text-white'>Register</button>}
+       
+     
+    </form> 
   </div>
-</div>
-
-    </>
-  )
+  </>
 }
